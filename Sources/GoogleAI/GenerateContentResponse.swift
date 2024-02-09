@@ -15,7 +15,6 @@
 import Foundation
 
 /// The model's response to a generate content request.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public struct GenerateContentResponse {
   /// A list of candidate response content, ordered from best to worst.
   public let candidates: [CandidateResponse]
@@ -44,7 +43,6 @@ public struct GenerateContentResponse {
   }
 }
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension GenerateContentResponse: Decodable {
   enum CodingKeys: CodingKey {
     case candidates
@@ -78,7 +76,6 @@ extension GenerateContentResponse: Decodable {
 
 /// A struct representing a possible reply to a content generation prompt. Each content generation
 /// prompt may produce multiple candidate responses.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public struct CandidateResponse {
   /// The response's content.
   public let content: ModelContent
@@ -103,7 +100,6 @@ public struct CandidateResponse {
   }
 }
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension CandidateResponse: Decodable {
   enum CodingKeys: CodingKey {
     case content
@@ -153,14 +149,12 @@ extension CandidateResponse: Decodable {
 }
 
 /// A collection of source attributions for a piece of content.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public struct CitationMetadata: Decodable {
   /// A list of individual cited sources and the parts of the content to which they apply.
   public let citationSources: [Citation]
 }
 
 /// A struct describing a source attribution.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public struct Citation: Decodable {
   /// The inclusive beginning of a sequence in a model response that derives from a cited source.
   public let startIndex: Int
@@ -176,7 +170,6 @@ public struct Citation: Decodable {
 }
 
 /// A value enumerating possible reasons for a model to terminate a content generation request.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public enum FinishReason: String {
   case unknown = "FINISH_REASON_UNKNOWN"
 
@@ -200,7 +193,6 @@ public enum FinishReason: String {
   case other = "OTHER"
 }
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension FinishReason: Decodable {
   /// Do not explicitly use. Initializer required for Decodable conformance.
   public init(from decoder: Decoder) throws {
@@ -217,7 +209,6 @@ extension FinishReason: Decodable {
 }
 
 /// A metadata struct containing any feedback the model had on the prompt it was provided.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public struct PromptFeedback {
   /// A type describing possible reasons to block a prompt.
   public enum BlockReason: String, Decodable {
@@ -260,7 +251,6 @@ public struct PromptFeedback {
   }
 }
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension PromptFeedback: Decodable {
   enum CodingKeys: CodingKey {
     case blockReason

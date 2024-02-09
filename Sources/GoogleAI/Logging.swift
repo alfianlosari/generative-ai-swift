@@ -13,9 +13,29 @@
 // limitations under the License.
 
 import Foundation
-import OSLog
 
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
+struct Logger {
+
+    let subsystem: String
+    let category: String
+    var disabled = false
+
+    func error(_ value: Any) {
+        guard !disabled else { return }
+        print(value)
+    }
+
+    func debug(_ value: Any) {
+        guard !disabled else { return }
+        print(value)
+    }
+
+    func info(_ value: Any) {
+        guard !disabled else { return }
+        print(value)
+    }
+}
+
 struct Logging {
   /// Subsystem that should be used for all Loggers.
   static let subsystem = "com.google.generative-ai"
@@ -40,7 +60,7 @@ struct Logging {
       return Logger(subsystem: subsystem, category: "NetworkResponse")
     } else {
       // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      return Logger(.disabled)
+      return Logger(subsystem: "", category: "", disabled: true)
     }
   }()
 
@@ -50,7 +70,7 @@ struct Logging {
       return Logger(subsystem: subsystem, category: defaultCategory)
     } else {
       // Return a valid logger that's using `OSLog.disabled` as the logger, hiding everything.
-      return Logger(.disabled)
+      return Logger(subsystem: "", category: "", disabled: true)
     }
   }()
 }

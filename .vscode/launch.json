@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:generative-ai-swift}",
+            "name": "Debug SampleApp",
+            "program": "${workspaceFolder:generative-ai-swift}\\.build\\debug\\SampleApp.exe",
+            "preLaunchTask": "swift: Build Debug SampleApp"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "sourceLanguages": [
+                "swift"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder:generative-ai-swift}",
+            "name": "Release SampleApp",
+            "program": "${workspaceFolder:generative-ai-swift}\\.build\\release\\SampleApp.exe",
+            "preLaunchTask": "swift: Build Release SampleApp"
+        }
+    ]
+}

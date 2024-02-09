@@ -13,23 +13,13 @@
 // limitations under the License.
 
 import Foundation
-import UniformTypeIdentifiers
-#if canImport(UIKit)
-  import UIKit // For UIImage extensions.
-#elseif canImport(AppKit)
-  import AppKit // For NSImage extensions.
-#endif
-
-private let imageCompressionQuality: CGFloat = 0.8
 
 /// A protocol describing any data that could be interpreted as model input data.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public protocol PartsRepresentable {
   var partsValue: [ModelContent.Part] { get }
 }
 
 /// Enables a `String` to be passed in as ``PartsRepresentable``.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension String: PartsRepresentable {
   public var partsValue: [ModelContent.Part] {
     return [.text(self)]
@@ -37,7 +27,6 @@ extension String: PartsRepresentable {
 }
 
 /// Enables a ``ModelContent.Part`` to be passed in as ``PartsRepresentable``.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension ModelContent.Part: PartsRepresentable {
   public var partsValue: [ModelContent.Part] {
     return [self]
@@ -46,84 +35,8 @@ extension ModelContent.Part: PartsRepresentable {
 
 /// Enable an `Array` of ``PartsRepresentable`` values to be passed in as a single
 /// ``PartsRepresentable``.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 extension [any PartsRepresentable]: PartsRepresentable {
   public var partsValue: [ModelContent.Part] {
     return flatMap { $0.partsValue }
-  }
-}
-
-#if canImport(UIKit)
-  /// Enables images to be representable as ``PartsRepresentable``.
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-  extension UIImage: PartsRepresentable {
-    public var partsValue: [ModelContent.Part] {
-      guard let data = jpegData(compressionQuality: imageCompressionQuality) else {
-        Logging.default.error("[GoogleGenerativeAI] Couldn't create JPEG from UIImage.")
-        return []
-      }
-
-      return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
-    }
-  }
-
-#elseif canImport(AppKit)
-  /// Enables images to be representable as ``PartsRepresentable``.
-  @available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-  extension NSImage: PartsRepresentable {
-    public var partsValue: [ModelContent.Part] {
-      guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-        Logging.default.error("[GoogleGenerativeAI] Couldn't create CGImage from NSImage.")
-        return []
-      }
-      let bmp = NSBitmapImageRep(cgImage: cgImage)
-      guard let data = bmp.representation(using: .jpeg, properties: [.compressionFactor: 0.8])
-      else {
-        Logging.default.error("[GoogleGenerativeAI] Couldn't create BMP from CGImage.")
-        return []
-      }
-      return [ModelContent.Part.data(mimetype: "image/jpeg", data)]
-    }
-  }
-#endif
-
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CGImage: PartsRepresentable {
-  public var partsValue: [ModelContent.Part] {
-    let output = NSMutableData()
-    guard let imageDestination = CGImageDestinationCreateWithData(
-      output, UTType.jpeg.identifier as CFString, 1, nil
-    ) else {
-      Logging.default.error("[GoogleGenerativeAI] Couldn't create JPEG from CGImage.")
-      return []
-    }
-    CGImageDestinationAddImage(imageDestination, self, nil)
-    CGImageDestinationSetProperties(imageDestination, [
-      kCGImageDestinationLossyCompressionQuality: imageCompressionQuality,
-    ] as CFDictionary)
-    if CGImageDestinationFinalize(imageDestination) {
-      return [.data(mimetype: "image/jpeg", output as Data)]
-    }
-    Logging.default.error("[GoogleGenerativeAI] Couldn't create JPEG from CGImage.")
-    return []
-  }
-}
-
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
-extension CIImage: PartsRepresentable {
-  public var partsValue: [ModelContent.Part] {
-    let context = CIContext()
-    let jpegData = (colorSpace ?? CGColorSpace(name: CGColorSpace.sRGB))
-      .flatMap {
-        // The docs specify kCGImageDestinationLossyCompressionQuality as a supported option, but
-        // Swift's type system does not allow this.
-        // [kCGImageDestinationLossyCompressionQuality: imageCompressionQuality]
-        context.jpegRepresentation(of: self, colorSpace: $0, options: [:])
-      }
-    if let jpegData = jpegData {
-      return [.data(mimetype: "image/jpeg", jpegData)]
-    }
-    Logging.default.error("[GoogleGenerativeAI] Couldn't create JPEG from CIImage.")
-    return []
   }
 }

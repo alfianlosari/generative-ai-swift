@@ -29,20 +29,20 @@ let package = Package(
       name: "GoogleGenerativeAI",
       targets: ["GoogleGenerativeAI"]
     ),
+    .executable(
+      name: "SampleApp",
+      targets: ["SampleApp"]
+    )
   ],
   targets: [
     .target(
       name: "GoogleGenerativeAI",
-      path: "Sources"
+      path: "Sources/GoogleAI"
     ),
-    .testTarget(
-      name: "GoogleGenerativeAITests",
+    .executableTarget(
+      name: "SampleApp",
       dependencies: ["GoogleGenerativeAI"],
-      path: "Tests",
-      resources: [
-        .process("GoogleAITests/CountTokenResponses"),
-        .process("GoogleAITests/GenerateContentResponses"),
-      ]
+      path: "Sources/SampleApp"
     ),
   ]
 )

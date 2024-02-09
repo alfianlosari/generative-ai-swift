@@ -13,12 +13,7 @@
 // limitations under the License.
 import Foundation
 
-#if !os(macOS) && !os(iOS)
-  #warning("Only iOS, macOS, and Catalyst targets are currently fully supported.")
-#endif
-
 /// Constants associated with the GenerativeAISwift SDK
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public enum GenerativeAISwift {
   /// String value of the SDK version
   public static let version = "0.4.7"
