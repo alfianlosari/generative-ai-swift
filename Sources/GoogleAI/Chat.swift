@@ -16,7 +16,6 @@ import Foundation
 
 /// An object that represents a back-and-forth chat with a model, capturing the history and saving
 /// the context in memory between each message sent.
-@available(iOS 15.0, macOS 11.0, macCatalyst 15.0, *)
 public class Chat {
   private let model: GenerativeModel
 
@@ -66,54 +65,54 @@ public class Chat {
   }
 
   /// See ``sendMessageStream(_:)-4abs3``.
-  // public func sendMessageStream(_ parts: PartsRepresentable...)
-  //   -> AsyncThrowingStream<GenerateContentResponse, Error> {
-  //   return sendMessageStream([ModelContent(parts: parts)])
-  // }
+  public func sendMessageStream(_ parts: PartsRepresentable...)
+    -> AsyncThrowingStream<GenerateContentResponse, Error> {
+    return sendMessageStream([ModelContent(parts: parts)])
+  }
 
   /// Sends a message using the existing history of this chat as context. If successful, the message
   /// and response will be added to the history. If unsuccessful, history will remain unchanged.
   /// - Parameter content: The new content to send as a single chat message.
   /// - Returns: A stream containing the model's response or an error if an error occurred.
-  // public func sendMessageStream(_ content: [ModelContent])
-  //   -> AsyncThrowingStream<GenerateContentResponse, Error> {
-  //   return AsyncThrowingStream { continuation in
-  //     Task {
-  //       var aggregatedContent: [ModelContent] = []
+  public func sendMessageStream(_ content: [ModelContent])
+    -> AsyncThrowingStream<GenerateContentResponse, Error> {
+    return AsyncThrowingStream { continuation in
+      Task {
+        var aggregatedContent: [ModelContent] = []
 
-  //       // Ensure that the new content has the role set.
-  //       let newContent: [ModelContent] = content.map(populateContentRole(_:))
+        // Ensure that the new content has the role set.
+        let newContent: [ModelContent] = content.map(populateContentRole(_:))
 
-  //       // Send the history alongside the new message as context.
-  //       let request = history + newContent
-  //       let stream = model.generateContentStream(request)
-  //       do {
-  //         for try await chunk in stream {
-  //           // Capture any content that's streaming. This should be populated if there's no error.
-  //           if let chunkContent = chunk.candidates.first?.content {
-  //             aggregatedContent.append(chunkContent)
-  //           }
+        // Send the history alongside the new message as context.
+        let request = history + newContent
+        let stream = model.generateContentStream(request)
+        do {
+          for try await chunk in stream {
+            // Capture any content that's streaming. This should be populated if there's no error.
+            if let chunkContent = chunk.candidates.first?.content {
+              aggregatedContent.append(chunkContent)
+            }
 
-  //           // Pass along the chunk.
-  //           continuation.yield(chunk)
-  //         }
-  //       } catch {
-  //         // Rethrow the error that the underlying stream threw. Don't add anything to history.
-  //         continuation.finish(throwing: error)
-  //         return
-  //       }
+            // Pass along the chunk.
+            continuation.yield(chunk)
+          }
+        } catch {
+          // Rethrow the error that the underlying stream threw. Don't add anything to history.
+          continuation.finish(throwing: error)
+          return
+        }
 
-  //       // Save the request.
-  //       history.append(contentsOf: newContent)
+        // Save the request.
+        history.append(contentsOf: newContent)
 
-  //       // Aggregate the content to add it to the history before we finish.
-  //       let aggregated = aggregatedChunks(aggregatedContent)
-  //       history.append(aggregated)
+        // Aggregate the content to add it to the history before we finish.
+        let aggregated = aggregatedChunks(aggregatedContent)
+        history.append(aggregated)
 
-  //       continuation.finish()
-  //     }
-  //   }
-  // }
+        continuation.finish()
+      }
+    }
+  }
 
   private func aggregatedChunks(_ chunks: [ModelContent]) -> ModelContent {
     var parts: [ModelContent.Part] = []
